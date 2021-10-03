@@ -1,25 +1,62 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import * as axios from 'axios';
 
-function App() {
+const App = () => {
+  const [data, setData] = useState([]);
+
+  const requestData = () => {
+    axios({
+      method: 'get',
+      url: 'https://api.npoint.io/49a151af5f05dde2a437',
+      responseType: 'stream',
+    }).then((response) => {
+      setData(response.data);
+    });
+  };
+
+  useEffect(() => {
+    requestData();
+  }, []);
+
+  const refreshOnClick = () => {
+    requestData();
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <h2>Welcome to Majora's Mask Tracker 8=======D</h2>
+      {data !== null ? (
+        <body>
+          {data.map((value, index) => {
+            return (
+              <div>
+                <p>Section: {value.name}</p>
+                <p>List of Locations</p>
+                {value.locations.map((location) => {
+                  return (
+                    <div className='location'>
+                      <div
+                        className={location.inLogic ? 'inLogic' : 'notInLogic'}
+                      >
+                        <p
+                          className={location.checked ? 'checked' : 'unchecked'}
+                        >
+                          name: {location.name}
+                        </p>
+                        <p>item: {location.value}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+          <button onClick={refreshOnClick}>Click to get tracker data</button>
+        </body>
+      ) : null}
     </div>
   );
-}
+};
 
 export default App;
